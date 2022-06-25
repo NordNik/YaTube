@@ -13,7 +13,8 @@ class PostAdmin(admin.ModelAdmin):
 
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
-    list_display = ('title', 'slug', 'description')
+    list_display = ('title', 'description')
+    prepopulated_fields = {"slug": ("title",)}
     search_fields = ('description',)
     empty_value_display = '-пусто-'
 

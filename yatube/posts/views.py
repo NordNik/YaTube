@@ -34,41 +34,31 @@ def profile(request, username):
     author = get_object_or_404(User, username=username)
     post_list = author.posts.select_related('author', 'group')
     page_obj = paginate_page(request, post_list)
-    if request.user.is_authenticated:
-        if Follow.objects.filter(
-                user=request.user,
-                author=author).exists():
-            return render(
-                request,
-                'posts/profile.html',
-                context={
-                    'author': author,
-                    'page_obj': page_obj,
-                    'following': True
-                }
-            )
-    return render(
-        request,
-        'posts/profile.html',
-        context={
-            'author': author,
-            'page_obj': page_obj,
-        }
-    )
+    following = request.user.is_authenticated and Follow.objects.filter(
+        user=request.user,
+        author=author).exists()
+    context = {
+        'author': author,
+        'page_obj': page_obj,
+        'following': following,
+    }
+    if (request.user.is_authenticated
+        and Follow.objects.filter(user=request.user,
+                                  author=author).exists()):
+        return render(request, 'posts/profile.html', context)
+    return render(request, 'posts/profile.html', context)
 
 
 def post_detail(request, post_id):
     """Shows one post and its author information"""
     post = get_object_or_404(Post, id=post_id)
-    comments = reversed(post.comments.all())
     form = CommentForm(request.POST or None)
     return render(request,
                   'posts/post_detail.html',
                   context={
                       'form': form,
                       'post': post,
-                      'comments': comments,
-                      'user': request.user, })
+                  })
 
 
 @login_required
@@ -89,15 +79,15 @@ def post_create(request):
 @login_required
 def post_edit(request, post_id):
     """Shows form to edit and resave existing post"""
-    posts = get_object_or_404(Post, id=post_id)
+    post = get_object_or_404(Post, id=post_id)
     form = PostForm(request.POST or None,
                     files=request.FILES or None,
-                    instance=posts)
+                    instance=post)
     context = {"form": form,
-               "post": posts,
+               "post": post,
                "is_edit": True,
                }
-    if not request.user == posts.author:
+    if not request.user == post.author:
         return redirect("posts:post_detail", post_id)
     if not request.method == "POST":
         return render(request,
@@ -128,8 +118,7 @@ def add_comment(request, post_id):
 @login_required
 def follow_index(request):
     """Shows posts only of authors the user is subscribed to"""
-    authors_list = User.objects.filter(following__user=request.user)
-    posts = Post.objects.filter(author__in=authors_list)
+    posts = Post.objects.filter(author__following__user=request.user)
     page_obj = paginate_page(request, posts)
     return render(
         request,
@@ -144,15 +133,15 @@ def follow_index(request):
 def profile_follow(request, username):
     """Subscribe"""
     author = get_object_or_404(User, username=username)
-    if (
-        request.user != author
-        and not Follow.objects.filter(
+    if (request.user == author
+        or Follow.objects.filter(
             user=request.user,
             author=author).exists()):
-        Follow.objects.create(
-            user=request.user,
-            author=author
-        )
+        return redirect('posts:profile', username=author)
+    Follow.objects.create(
+        user=request.user,
+        author=author
+    )
     return redirect('posts:profile', username=author)
 
 
@@ -160,13 +149,10 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     """Unsubscribe"""
     author = get_object_or_404(User, username=username)
-    if (
-        request.user != author
-        and Follow.objects.filter(
-            user=request.user,
-            author=author).exists()):
-        Follow.objects.get(
-            user=request.user,
-            author=author
-        ).delete()
+    following_pair = Follow.objects.filter(
+        user=request.user,
+        author=author
+    )
+    if (request.user == author or following_pair.exists()):
+        following_pair.delete()
     return redirect('posts:profile', username=author)

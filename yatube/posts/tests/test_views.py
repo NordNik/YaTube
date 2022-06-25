@@ -24,9 +24,7 @@ class PostPagesTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.author = User.objects.create_user(username='Author')
-        cls.guest_client = Client()
-        cls.author_client = Client()
-        cls.author_client.force_login(cls.author)
+        cls.author_2 = User.objects.create_user(username='Author_2')
         cls.first_group = Group.objects.create(title='first group',
                                                description='test_description',
                                                slug='first_slug')
@@ -59,6 +57,14 @@ class PostPagesTests(TestCase):
     def tearDownClass(cls):
         super().tearDownClass()
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
+
+    def setUp(self):
+        cache.clear()
+        self.guest_client = Client()
+        self.author_client = Client()
+        self.author_client.force_login(self.author)
+        self.author_2_client = Client()
+        self.author_2_client.force_login(self.author_2)
 
     def test_public_templates(self):
         """
@@ -163,11 +169,7 @@ class PostPagesTests(TestCase):
             data=form,
             follow=True
         )
-        # post = Post.objects.all()[0]
         self.assertEqual(Post.objects.count(), posts_count + 1)
-        # for _, reverse_name in self.public_pages_names:
-        #    with self.subTest(reverse_name=reverse_name):
-        #        self.assertIsNotNone(post.image)
 
     def test_post_edit_context(self):
         """
@@ -253,15 +255,6 @@ class PostPagesTests(TestCase):
         self.assertNotEqual(content_before, content_clean_cache)
 
     # Subscriptions tests
-    @classmethod
-    def setUp(self):
-        self.author_2 = User.objects.create_user(username='Author_2')
-        self.author_3 = User.objects.create_user(username='Author_3')
-        self.author_2_client = Client()
-        self.author_2_client.force_login(self.author_2)
-        self.author_3_client = Client()
-        self.author_3_client.force_login(self.author_3)
-
     def test_user_is_able_to_subscribe(self):
         """
         User can subscribe to author
@@ -295,6 +288,9 @@ class PostPagesTests(TestCase):
         response = self.author_client.get(reverse('posts:follow_index'))
         post = response.context['page_obj'][0]
         self.assertEqual(post.author, post_author_2.author)
-        response = self.author_3_client.get(reverse('posts:follow_index'))
+        self.author_client.get(
+            reverse('posts:profile_unfollow', kwargs={'username': 'Author_2'})
+        )
+        response = self.author_2_client.get(reverse('posts:follow_index'))
         post = response.context['page_obj']
         self.assertFalse(post)

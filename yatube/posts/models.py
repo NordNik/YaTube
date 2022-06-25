@@ -65,6 +65,9 @@ class Comment(models.Model):
     def __str__(self):
         return self.text[:15]
 
+    class Meta:
+        ordering = ['-created']
+
 
 class Follow(models.Model):
     user = models.ForeignKey(
@@ -79,6 +82,12 @@ class Follow(models.Model):
     )
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique user-author pair'
+            )
+        ]
         verbose_name = 'Subscriptions'
         verbose_name_plural = 'Subscriptions'
 

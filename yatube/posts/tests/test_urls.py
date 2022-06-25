@@ -29,14 +29,14 @@ class PostsURLTests(TestCase):
                            ('posts/create_post.html', '/posts/1/edit/'))
 
     def test_urls_correct_response(self):
-        '''Check if all pages give a response'''
+        """Check if all pages give a response"""
         for _, address in self.pages_names:
             with self.subTest(address=address):
                 response = self.authorized_client.get(address)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_unexist_url(self):
-        '''Check if unexisting page give 404 error'''
+        """Check if unexisting page give 404 error"""
         response = self.authorized_client.get('/posts/unexisting/')
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
@@ -48,14 +48,14 @@ class PostsURLTests(TestCase):
         self.assertRedirects(response, f'{login_url}?next={address}')
 
     def test_urls_uses_correct_template(self):
-        '''URL-адрес использует соответствующий шаблон.'''
+        """URL-адрес использует соответствующий шаблон."""
         for template, address in self.pages_names:
             with self.subTest(address=address):
                 response = self.authorized_client.get(address)
                 self.assertTemplateUsed(response, template)
 
     def test_url_redirect_edit_post(self):
-        '''Check if author only can edit page '''
+        """Check if author only can edit page"""
         not_author = User.objects.create_user(username='NotAuthor')
         self.not_author_client = Client()
         self.not_author_client.force_login(not_author)

@@ -1,10 +1,12 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'j58-&dd7c-kzj4%=jd5g^(a287z#!98@f27l+&g2b(a%h#($f^'
+SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
-DEBUG = True
+DEBUG = str(os.getenv('DEBUG'))
 
 CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 

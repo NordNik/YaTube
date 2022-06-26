@@ -66,6 +66,13 @@ class PostPagesTests(TestCase):
         self.author_2_client = Client()
         self.author_2_client.force_login(self.author_2)
 
+    def test_error_templates(self):
+        """
+        Тест шаблона кастомной страницы ошибки 404
+        """
+        response = self.author_client.get('/posts/unexisting/')
+        self.assertTemplateUsed(response, 'core/404.html')
+
     def test_public_templates(self):
         """
         Тест совпадения адреса и шаблона страниц index,

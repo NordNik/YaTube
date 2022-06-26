@@ -1,6 +1,6 @@
 # Description
 
-This project is made by [Dr. Nikolai Orlov](t.me/Nikolai_Orlov)(t.me/Nikolai_Orlov) as a simple pet-project. The aim was to inhale a bit of life in my theoretical Django knowledge and, in this way, to get practice in backend development.
+This project is made by [Nikolai Orlov](t.me/Nikolai_Orlov)(t.me/Nikolai_Orlov) as a simple pet-project. The aim was to inhale a bit of life in my theoretical Django knowledge and, in this way, to get practice in backend development.
 
 The project is a simple blog platform to share your thoughts and, in reverse, to read interesting and valuable for your life authors.
 

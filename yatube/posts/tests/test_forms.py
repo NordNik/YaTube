@@ -13,13 +13,13 @@ class PostCreateFormTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = User.objects.create_user(username='Author')
         cls.group = Group.objects.create(title='First_group',
                                          description='test_descript',
                                          slug='first_slug')
 
     def setUp(self):
         cache.clear()
+        self.user = User.objects.create_user(username='Author')
         self.guest_client = Client()
         self.auth_client = Client()
         self.auth_client.force_login(self.user)
@@ -44,7 +44,7 @@ class PostCreateFormTests(TestCase):
             data=form_data,
             follow=True
         )
-        post = Post.objects.all()[0]
+        post = Post.objects.first()
         self.assertRedirects(response, reverse('posts:profile',
                                                kwargs={'username': 'Author'}))
         self.assertEqual(Post.objects.count(), 1)
@@ -57,7 +57,8 @@ class PostCreateFormTests(TestCase):
         Post.objects.create(text='Test text',
                             group=self.group,
                             author=self.user)
-        post = Post.objects.all()[0]
+        post = Post.objects.first()
+        initial_pub_date = post.pub_date
         self.assertEqual(post.text, 'Test text')
         form_data = {
             'text': 'Test text (edited)',
@@ -68,6 +69,7 @@ class PostCreateFormTests(TestCase):
             data=form_data,
             follow=True
         )
-        post = Post.objects.all()[0]
+        post = Post.objects.first()
         self.assertEqual(Post.objects.count(), 1)
         self.assertEqual(post.text, 'Test text (edited)')
+        self.assertEqual(post.pub_date, initial_pub_date)

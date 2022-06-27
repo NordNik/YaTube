@@ -13,16 +13,16 @@
     <div class="card">
       <div class="card-header"> 
         {% if is_edit %}      
-        Edit post
+          Edit post
         {% else %}    
-        New post
+          New post
         {% endif %}        
       </div>
       <div class="card-body">
         {% if is_edit %}      
-        <form method="post" enctype="multipart/form-data" action="{% url 'posts:post_edit' post.pk %}">
+          <form method="post" enctype="multipart/form-data" action="{% url 'posts:post_edit' post.pk %}">
         {% else %}    
-        <form method="post" enctype="multipart/form-data" action="{% url 'posts:post_create' %}">
+          <form method="post" enctype="multipart/form-data" action="{% url 'posts:post_create' %}">
         {% endif %}
           {% csrf_token %}
         {% load user_filters %}

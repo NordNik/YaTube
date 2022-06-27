@@ -4,8 +4,8 @@
   
   <h1>{{ group.title }}</h1>
   <p>{{ group.description }}</p>
-    {% for post in page_obj %}
+  {% for post in page_obj %}
     {% include 'posts/includes/article.html' %}
-    {% endfor %}
-    {% include 'posts/includes/paginator.html' %}
+  {% endfor %}
+  {% include 'posts/includes/paginator.html' %}
 {% endblock %}

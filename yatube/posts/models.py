@@ -93,3 +93,49 @@ class Follow(models.Model):
 
     def __str__(self):
         return f'{self.user}'
+
+
+class Like(models.Model):
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='likes'
+    )
+    liked_user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='likes'
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['post', 'liked_user'],
+                name='unique post-liked_user pair'
+            )
+        ]
+        verbose_name = 'Likes'
+        verbose_name_plural = 'Likes'
+
+
+class Dislike(models.Model):
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='dislikes'
+    )
+    disliked_user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='dislikes'
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['post', 'disliked_user'],
+                name='unique post-disliked_user pair'
+            )
+        ]
+        verbose_name = 'Dislikes'
+        verbose_name_plural = 'Dislikes'

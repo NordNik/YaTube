@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Group, Comment, Follow
+from .models import Post, Group, Comment, Follow, Like, Dislike
 
 
 @admin.register(Post)
@@ -30,4 +30,16 @@ class CommentAdmin(admin.ModelAdmin):
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
     list_display = ('user', 'author')
+    empty_value_display = '-пусто-'
+
+
+@admin.register(Like)
+class LikeAdmin(admin.ModelAdmin):
+    list_display = ('post', 'liked_user')
+    empty_value_display = '-пусто-'
+
+
+@admin.register(Dislike)
+class DisikeAdmin(admin.ModelAdmin):
+    list_display = ('post', 'disliked_user')
     empty_value_display = '-пусто-'

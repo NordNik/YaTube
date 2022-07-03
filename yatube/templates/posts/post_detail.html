@@ -39,6 +39,12 @@
         <p>
         {{ post.text }}
         </p>
+        <p>
+          liked: {{ post.likes.count }}
+        </p>
+        <p>
+            disliked: {{ post.dislikes.count }}
+        </p>
         {% if request.user == post.author %}
             <a class="btn btn-primary" href="{% url 'posts:post_edit' post.pk %}">
               Edit post

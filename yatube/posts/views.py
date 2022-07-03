@@ -1,7 +1,7 @@
 from .paginator import paginate_page
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Group, Follow, User
+from .models import Post, Group, Follow, Like, Dislike, User
 from .forms import PostForm, CommentForm
 
 
@@ -152,3 +152,37 @@ def profile_unfollow(request, username):
     if following_pair.exists():
         following_pair.delete()
     return redirect('posts:profile', username=author)
+
+
+@login_required
+def like_post(request, post_id):
+    """Like a post"""
+    post = get_object_or_404(Post, id=post_id)
+    like_pair = Like.objects.filter(
+        post=post,
+        liked_user=request.user,
+    )
+    if like_pair.exists():
+        return redirect('posts:post_detail', post_id=post_id)
+    Like.objects.create(
+        post=post,
+        liked_user=request.user,
+    )
+    return redirect('posts:post_detail', post_id=post_id)
+
+
+@login_required
+def dislike_post(request, post_id):
+    """Disike a post"""
+    post = get_object_or_404(Post, id=post_id)
+    dislike_pair = Dislike.objects.filter(
+        post=post,
+        disliked_user=request.user,
+    )
+    if dislike_pair.exists():
+        return redirect('posts:post_detail', post_id=post_id)
+    Dislike.objects.create(
+        post=post,
+        disliked_user=request.user,
+    )
+    return redirect('posts:post_detail', post_id=post_id)

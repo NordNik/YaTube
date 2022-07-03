@@ -22,5 +22,19 @@
 
 Группа: <a href="{% url 'posts:group_list' post.group.slug %}">{{ post.group.slug }}</a>
 {% endif %}
+<p>liked: {{ post.likes.count }}
+  <a class="btn btn-lg btn-light"
+  href="{% url 'posts:like_post' post.id %}" role="button"
+  >
+  Like
+  </a>
+</p>
+<p>disliked: {{ post.dislikes.count }}
+  <a class="btn btn-lg btn-light"
+  href="{% url 'posts:dislike_post' post.id %}" role="button"
+  >
+  Dislike
+  </a>
+</p>
 {% if not forloop.last %}<hr>{% endif %}
 </article>
